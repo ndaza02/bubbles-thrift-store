@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editorial — Bubbles' Thrift</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            primary: '#052e16',
+                            accent: '#d4af37',
+                            cream: '#fafaf9',
+                            surface: '#f5f5f4',
+                            text: '#334155',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(5, 46, 22, 0.08)',
+                        'hover': '0 20px 40px -10px rgba(5, 46, 22, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-brand-cream text-brand-text font-sans antialiased selection:bg-brand-primary selection:text-brand-accent">
+
+    <!-- Cart Overlay & Drawer (Consistent with index/shop) -->
+    <div id="cartOverlay"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] opacity-0 pointer-events-none transition-opacity duration-500">
+    </div>
+    <div id="cartDrawer"
+        class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl translate-x-full transition-transform duration-500 flex flex-col">
+        <div class="px-8 py-6 border-b border-brand-primary/5 flex items-center justify-between bg-brand-surface">
+            <h2 class="text-2xl font-serif text-brand-primary font-bold">Shopping Bag</h2>
+            <button id="closeCart"
+                class="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center transition-colors">
+                <i data-lucide="x" class="w-5 h-5 text-brand-primary"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-8" id="cartDrawerItems"></div>
+        <div id="cartEmptyState" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center">
+            <i data-lucide="shopping-bag" class="w-16 h-16 text-brand-primary/10 mb-6"></i>
+            <h3 class="text-xl font-serif text-brand-primary mb-2">Your bag is empty</h3>
+            <p class="text-gray-500 mb-8">It seems you haven't added anything yet.</p>
+            <a href="shop.html" class="bg-brand-primary text-brand-cream px-8 py-3 rounded-full font-medium"
+                onclick="closeCart()">Start Shopping</a>
+        </div>
+        <div id="cartContent" class="px-8 py-8 border-t border-brand-primary/5 bg-brand-surface space-y-6">
+            <div class="flex justify-between items-center text-lg">
+                <span class="text-gray-500 uppercase tracking-widest text-xs font-bold">Subtotal</span>
+                <span class="font-serif text-brand-primary font-bold text-2xl" id="cartTotal">$0.00</span>
+            </div>
+            <a href="checkout.html"
+                class="block w-full bg-brand-primary text-brand-accent text-center py-5 rounded-full font-bold shadow-lg hover:bg-brand-primary/90 hover:scale-[1.02] transition-all group">
+                Order via WhatsApp <i data-lucide="message-circle"
+                    class="w-4 h-4 inline-block ml-2 group-hover:scale-110 transition-transform"></i>
+            </a>
+        </div>
+    </div>
+
+    <div
+        class="max-w-7xl mx-auto bg-white min-h-screen relative shadow-soft rounded-[2rem] my-8 overflow-hidden ring-1 ring-black/5">
+
+        <!-- Navigation -->
+        <nav
+            class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-brand-primary/5 px-8 py-6 flex items-center justify-between transition-all">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div
+                    class="w-10 h-10 bg-brand-primary text-brand-accent rounded-full flex items-center justify-center shadow-lg shadow-brand-primary/20 group-hover:scale-105 transition-transform">
+                    <i data-lucide="crown" class="w-5 h-5"></i>
+                </div>
+                <span class="text-3xl font-serif font-bold text-brand-primary tracking-tight">Bubbles' Thrift</span>
+            </a>
+            <ul class="hidden md:flex gap-10 text-brand-primary/70 font-medium text-xs tracking-[0.2em] uppercase">
+                <li class="hover:text-brand-primary cursor-pointer transition-colors"><a href="index.html">Home</a></li>
+                <li class="hover:text-brand-primary cursor-pointer transition-colors"><a href="shop.html">Women</a></li>
+                <li class="hover:text-brand-primary cursor-pointer transition-colors"><a href="shop.html">Men</a></li>
+                <li class="hover:text-brand-primary cursor-pointer transition-colors"><a href="shop.html">Shop All</a>
+                </li>
+                <li class="text-brand-primary font-bold border-b border-brand-accent pb-1">Editorial</li>
+            </ul>
+            <div class="flex gap-6 text-brand-primary/60">
+                <i data-lucide="search" class="w-5 h-5 cursor-pointer hover:text-brand-primary transition-colors"></i>
+                <div class="relative cursor-pointer group" id="cartIcon">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 group-hover:text-brand-primary transition-colors"></i>
+                    <span id="cartBadge"
+                        class="hidden absolute -top-2 -right-2 bg-brand-primary text-brand-accent text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Magazine Hero -->
+        <header class="relative h-[90vh] overflow-hidden">
+            <img src="assets/editorial/hero.jpg" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-primary/80 via-brand-primary/40 to-transparent">
+            </div>
+            <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-24">
+                <div class="max-w-2xl text-brand-cream">
+                    <span
+                        class="text-brand-accent font-bold tracking-[0.3em] text-[10px] uppercase mb-6 block drop-shadow-md">Volume
+                        01 — Issue 01</span>
+                    <h1 class="text-7xl md:text-9xl font-serif leading-[0.85] mb-8 drop-shadow-2xl">
+                        The <br><span class="italic text-brand-accent">Silent</span> <br>Luxury.
+                    </h1>
+                    <p
+                        class="text-xl font-light leading-relaxed max-w-sm opacity-90 mb-12 border-l-2 border-brand-accent pl-6">
+                        Exploring the philosophy of 'Quiet Luxury' through the lens of curated heritage fashion.
+                    </p>
+                    <button
+                        class="bg-brand-accent text-brand-primary px-12 py-5 rounded-full font-bold uppercase tracking-widest text-xs shadow-2xl hover:bg-white transition-all hover:scale-105 active:scale-95">
+                        Read Featured Story
+                    </button>
+                </div>
+            </div>
+            <!-- Scroll Indicator -->
+            <div
+                class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-brand-cream/40">
+                <span class="text-[10px] uppercase tracking-[0.5em] font-bold">Scroll</span>
+                <div class="w-[1px] h-12 bg-gradient-to-b from-brand-accent to-transparent"></div>
+            </div>
+        </header>
+
+        <!-- Editorial Content Grid -->
+        <main class="py-32 px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-16">
+
+                <!-- Story 01: Minimalist -->
+                <div class="md:col-span-7 flex flex-col gap-10 group">
+                    <div class="aspect-[16/9] overflow-hidden rounded-[2.5rem] shadow-soft">
+                        <img src="assets/editorial/minimalist.jpg"
+                            class="w-full h-full object-cover grayscale-0 group-hover:scale-105 transition-transform duration-1000">
+                    </div>
+                    <div>
+                        <span class="text-brand-accent font-bold tracking-widest text-xs uppercase mb-4 block">Trend
+                            Analysis</span>
+                        <h2
+                            class="text-4xl md:text-6xl font-serif text-brand-primary mb-6 leading-tight group-hover:underline decoration-brand-accent decoration-4 underline-offset-8 transition-all">
+                            The Architecture of Minimalism</h2>
+                        <p class="text-gray-500 text-lg leading-relaxed max-w-xl mb-8">
+                            Why the shift towards neutral palettes and structured tailoring is defining the current
+                            decade. Discover how to build a timeless capsule wardrobe with pre-loved essentials.
+                        </p>
+                        <a href="#"
+                            class="inline-flex items-center gap-4 font-bold text-brand-primary uppercase tracking-[0.2em] text-xs group/link">
+                            Discover More <i data-lucide="arrow-right"
+                                class="w-4 h-4 text-brand-accent group-hover/link:translate-x-2 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Story 02: Quote/Brief -->
+                <div
+                    class="md:col-span-5 flex flex-col justify-center bg-brand-surface rounded-[2.5rem] p-12 md:p-20 relative overflow-hidden">
+                    <i data-lucide="quote" class="w-32 h-32 text-brand-primary/5 absolute -top-4 -left-4"></i>
+                    <h3 class="text-3xl font-serif italic text-brand-primary leading-snug mb-8 relative z-10">
+                        "Luxury is not about being noticed, it's about being remembered for the quality you leave
+                        behind."
+                    </h3>
+                    <p class="text-brand-accent font-bold uppercase tracking-widest text-[10px]"> — Bubbles' Curator</p>
+                </div>
+
+                <!-- Story 03: The Archive -->
+                <div class="md:col-span-5 flex flex-col gap-8 sticky top-28 h-fit group">
+                    <div class="aspect-square overflow-hidden rounded-[2.5rem] shadow-soft bg-brand-primary">
+                        <img src="assets/editorial/archive.jpg"
+                            class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700">
+                    </div>
+                    <div>
+                        <span
+                            class="text-brand-accent font-bold tracking-widest text-xs uppercase mb-3 block">Process</span>
+                        <h2 class="text-3xl font-serif text-brand-primary mb-4">Inside the Atelier: The Preservation
+                        </h2>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-6">
+                            Step behind the scenes and see how our master restorers handle 40-year-old silk and vintage
+                            embroideries to bring them back to life.
+                        </p>
+                        <a href="#"
+                            class="font-bold text-brand-primary uppercase tracking-widest text-[10px] border-b border-brand-accent pb-1 hover:text-brand-accent transition-colors">Read
+                            Process</a>
+                    </div>
+                </div>
+
+                <!-- Story 04: Large Feature -->
+                <div class="md:col-span-7 flex flex-col gap-12 mt-12">
+                    <div class="grid grid-cols-2 gap-8">
+                        <div
+                            class="bg-brand-surface aspect-[3/4] rounded-[2rem] p-10 flex flex-col justify-end group cursor-pointer hover:bg-brand-primary transition-colors duration-500">
+                            <h4
+                                class="text-brand-accent font-bold text-xs uppercase mb-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                90s Revival</h4>
+                            <h3 class="text-2xl font-serif text-brand-primary group-hover:text-white transition-colors">
+                                Why 1994 is the greatest year in fashion history.</h3>
+                        </div>
+                        <div
+                            class="bg-brand-surface aspect-[3/4] rounded-[2rem] p-10 flex flex-col justify-end group cursor-pointer hover:bg-brand-primary transition-colors duration-500">
+                            <h4
+                                class="text-brand-accent font-bold text-xs uppercase mb-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                Sustainability</h4>
+                            <h3 class="text-2xl font-serif text-brand-primary group-hover:text-white transition-colors">
+                                The environmental cost of 'New' Luxury vs 'Pre-loved'.</h3>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-brand-primary rounded-[3rem] p-16 text-center text-brand-cream relative overflow-hidden group">
+                        <div class="absolute inset-0 border-[20px] border-brand-accent/5 rounded-[3rem]"></div>
+                        <h2 class="text-4xl font-serif mb-6 italic">Want the full Lookbook?</h2>
+                        <p class="text-brand-cream/60 max-w-sm mx-auto mb-10">Our quarterly digital editorial sent
+                            exclusively to members of the Inner Circle.</p>
+                        <button
+                            class="bg-brand-accent text-brand-primary px-10 py-4 rounded-full font-bold uppercase tracking-widest text-[10px] hover:scale-105 transition-transform">Download
+                            Winter Issue</button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer (Consistent) -->
+        <footer class="bg-brand-primary text-white pt-24 pb-12 px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20 border-b border-white/10 pb-20">
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div
+                            class="w-8 h-8 bg-brand-accent text-brand-primary rounded-full flex items-center justify-center">
+                            <i data-lucide="crown" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-2xl font-serif font-bold tracking-tight">Bubbles' Thrift</span>
+                    </div>
+                    <p class="text-brand-cream/60 text-sm leading-relaxed mb-8">Redefining luxury through the lens of
+                        sustainability. Your destination for authenticated, pre-loved fashion.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-xs text-brand-accent mb-8">Shop</h4>
+                    <ul class="space-y-4 text-sm text-brand-cream/80">
+                        <li><a href="shop.html" class="hover:text-white transition-colors">Dresses</a></li>
+                        <li><a href="shop.html" class="hover:text-white transition-colors">Designers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-xs text-brand-accent mb-8">Company</h4>
+                    <ul class="space-y-4 text-sm text-brand-cream/80">
+                        <li><a href="#" class="hover:text-white transition-colors">Our Story</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Authenticity</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold uppercase tracking-widest text-xs text-brand-accent mb-8">Support</h4>
+                    <ul class="space-y-4 text-sm text-brand-cream/80">
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center text-xs text-brand-cream/40">
+                <p>&copy; 2026 Bubbles' Thrift. All rights reserved.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="cart.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
