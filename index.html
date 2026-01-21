@@ -72,10 +72,16 @@
         class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl translate-x-full transition-transform duration-500 flex flex-col">
         <div class="px-8 py-6 border-b border-brand-primary/5 flex items-center justify-between bg-brand-surface">
             <h2 class="text-2xl font-serif text-brand-primary font-bold">Shopping Bag</h2>
-            <button id="closeCart"
-                class="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center transition-colors">
-                <i data-lucide="x" class="w-5 h-5 text-brand-primary"></i>
-            </button>
+            <div class="flex items-center gap-4">
+                <button id="clearCartBtn"
+                    class="text-[10px] font-bold uppercase tracking-widest text-red-600 hover:text-red-700 transition-colors">
+                    Clear All
+                </button>
+                <button id="closeCart"
+                    class="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-brand-primary"></i>
+                </button>
+            </div>
         </div>
 
         <div class="flex-1 overflow-y-auto px-8" id="cartDrawerItems">

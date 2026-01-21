@@ -74,6 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
         openCart();
     };
 
+    window.clearCart = () => {
+        if (confirm('Are you sure you want to clear your shopping bag?')) {
+            cart = [];
+            updateCart();
+        }
+    };
+
     // Event Delegation for Cart Drawer Actions
     document.body.addEventListener('click', (e) => {
         if (e.target.closest('.increment')) {
@@ -89,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 cart.splice(index, 1);
             }
             updateCart();
+        }
+        if (e.target.closest('#clearCartBtn')) {
+            window.clearCart();
         }
         if (e.target.closest('.add-to-cart-btn')) {
             const btn = e.target.closest('.add-to-cart-btn');
