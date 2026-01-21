@@ -94,6 +94,37 @@
 <body
     class="bg-brand-cream text-brand-text font-sans antialiased selection:bg-brand-primary selection:text-brand-accent">
 
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[80] opacity-0 pointer-events-none transition-opacity duration-500">
+    </div>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobileMenuDrawer"
+        class="fixed top-0 left-0 h-full w-full max-w-xs bg-white z-[90] shadow-2xl -translate-x-full transition-transform duration-500 flex flex-col">
+        <div class="px-6 py-6 border-b border-brand-primary/5 flex items-center justify-between bg-brand-surface">
+            <span class="text-xl font-serif font-bold text-brand-primary">Menu</span>
+            <button id="closeMobileMenu"
+                class="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center transition-colors">
+                <i data-lucide="x" class="w-5 h-5 text-brand-primary"></i>
+            </button>
+        </div>
+        <nav class="flex-1 p-6">
+            <ul class="space-y-6 text-lg font-medium text-brand-primary">
+                <li><a href="index.html" class="flex items-center gap-4 hover:text-brand-accent transition-colors"><i
+                            data-lucide="home" class="w-5 h-5"></i> Home</a></li>
+                <li><a href="shop.html" class="flex items-center gap-4 hover:text-brand-accent transition-colors"><i
+                            data-lucide="shopping-bag" class="w-5 h-5"></i> Shop</a></li>
+                <li><a href="editorial.html"
+                        class="flex items-center gap-4 hover:text-brand-accent transition-colors"><i
+                            data-lucide="book-open" class="w-5 h-5"></i> Editorial</a></li>
+            </ul>
+        </nav>
+        <div class="p-6 border-t border-brand-primary/5 bg-brand-surface">
+            <p class="text-xs text-gray-400 uppercase tracking-widest">© 2026 Bubbles' Thrift</p>
+        </div>
+    </div>
+
     <!-- Cart Overlay -->
     <div id="cartOverlay"
         class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] opacity-0 pointer-events-none transition-opacity duration-500">
@@ -234,20 +265,20 @@
             </a>
             <ul class="hidden md:flex gap-10 text-brand-primary/70 font-medium text-xs tracking-[0.2em] uppercase">
                 <li class="hover:text-brand-primary cursor-pointer transition-colors"><a href="index.html">Home</a></li>
-                <li class="hover:text-brand-primary cursor-pointer transition-colors"><a href="#">Women</a></li>
-                <li class="hover:text-brand-primary cursor-pointer transition-colors"><a href="#">Men</a></li>
-                <li class="text-brand-primary font-bold border-b border-brand-accent pb-1">Shop All</li>
+                <li class="text-brand-primary font-bold border-b border-brand-accent pb-1">Shop</li>
                 <li class="hover:text-brand-primary cursor-pointer transition-colors"><a
                         href="editorial.html">Editorial</a></li>
             </ul>
             <div class="flex items-center gap-4 md:gap-6 text-brand-primary/60">
+                <button id="mobileMenuToggle"
+                    class="md:hidden w-9 h-9 bg-brand-surface rounded-full flex items-center justify-center">
+                    <i data-lucide="menu" class="w-4 h-4 text-brand-primary"></i>
+                </button>
                 <button id="mobileFilterToggle"
                     class="md:hidden w-9 h-9 bg-brand-surface rounded-full flex items-center justify-center">
                     <i data-lucide="sliders-horizontal" class="w-4 h-4 text-brand-primary"></i>
                 </button>
                 <i data-lucide="search"
-                    class="w-5 h-5 cursor-pointer hover:text-brand-primary transition-colors hidden md:block"></i>
-                <i data-lucide="heart"
                     class="w-5 h-5 cursor-pointer hover:text-brand-primary transition-colors hidden md:block"></i>
                 <div class="relative cursor-pointer group" id="cartIcon">
                     <i data-lucide="shopping-bag" class="w-5 h-5 group-hover:text-brand-primary transition-colors"></i>
@@ -1091,6 +1122,26 @@
                 filterSidebar.classList.toggle('mb-6');
             });
         }
+
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileMenuDrawer = document.getElementById('mobileMenuDrawer');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+
+        const openMobileMenu = () => {
+            mobileMenuDrawer?.classList.remove('-translate-x-full');
+            mobileMenuOverlay?.classList.remove('opacity-0', 'pointer-events-none');
+        };
+
+        const hideMobileMenu = () => {
+            mobileMenuDrawer?.classList.add('-translate-x-full');
+            mobileMenuOverlay?.classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        mobileMenuToggle?.addEventListener('click', openMobileMenu);
+        closeMobileMenu?.addEventListener('click', hideMobileMenu);
+        mobileMenuOverlay?.addEventListener('click', hideMobileMenu);
 
         // Initialize Lucide icons
         lucide.createIcons();
